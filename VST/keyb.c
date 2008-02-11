@@ -8,6 +8,8 @@
 #include <lua.h>
 #include <lauxlib.h>
 
+#include <errno.h>
+
 #define KEY_F1  0x81
 #define KEY_F2  0x82
 #define KEY_F3  0x83
@@ -59,6 +61,7 @@ static int l_init_tty(lua_State *L)
     const char *tty = luaL_checkstring(L, 1);
     if((tty_fd = open(tty, O_RDONLY)) < 0)
     {
+        fprintf(stderr, "Opening '%s': %s\n", tty, strerror(errno));
         // raise error!
         return 0;
     }
@@ -96,7 +99,8 @@ static int l_restore_tty(lua_State *L)
 
 static int l_readkey(lua_State *L)
 {
-    int key = keyb_wait_esc(10);
+    int key = keyb_wait_esc(5000);
+    //int key = KEY_F1;
     char *fkey;
 
     switch(key) {
@@ -122,7 +126,10 @@ static int l_readkey(lua_State *L)
     return 1;
 }
 
-/* private functions */
+/**************************************************************/
+/******************* PRIVATE FUNCTIONS ************************/
+/**************************************************************/
+
 static int keyb_get(void)
 {
     int key = 0;
@@ -132,19 +139,22 @@ static int keyb_get(void)
 }
 
 static int keyb_wait(int msec)
-{
+{    
     fd_set rfds;
     struct timeval tv;
+
+    /* Check... */
+    if(tty_fd < 0)
+        return -1;
 
     FD_ZERO(&rfds);
     FD_SET(tty_fd, &rfds);
 
-	tv.tv_sec = msec / 1000;
-	tv.tv_usec = (msec % 1000) * 1000;
+    tv.tv_sec = msec / 1000;
+    tv.tv_usec = (msec % 1000) * 1000;
 
-    if (select(1, &rfds, NULL, NULL, &tv))
-	    return (keyb_get());
-
+    if (select(tty_fd+1, &rfds, NULL, NULL, &tv))
+        return (keyb_get());
     return -1;
 }
 
@@ -164,8 +174,9 @@ static int keyb_wait_esc(int msec)
     }
 
     // Keine Taste im Buffer: Auf neue warten.
-    if (key == 0)
+    if (key == 0) {
         key = keyb_wait(msec);
+    }
 
     if (key == 27)
     {
@@ -206,6 +217,5 @@ static int keyb_wait_esc(int msec)
         // Ein simples ESC. Rest im Buffer (ptr)
         key = 27;
     }
-
     return key;
 }
