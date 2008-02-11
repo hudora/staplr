@@ -61,8 +61,9 @@ static int l_init_tty(lua_State *L)
     const char *tty = luaL_checkstring(L, 1);
     if((tty_fd = open(tty, O_RDONLY)) < 0)
     {
-        fprintf(stderr, "Opening '%s': %s\n", tty, strerror(errno));
-        // raise error!
+        char errmsg[512];
+        snprintf(errmsg, sizeof(errmsg), "%s: %s", tty, strerror(errno));
+        luaL_argerror(L, 1, errmsg);
         return 0;
     }
     
