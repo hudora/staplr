@@ -35,12 +35,21 @@ static int l_init_tty(lua_State *L);
 static int l_restore_tty(lua_State *L);
 static int l_readkey(lua_State *L);
 
+static const struct luaL_reg keyb[] =
+{
+    {"init_tty", l_init_tty},
+    {"restore_tty", l_restore_tty},
+    {"readkey", l_readkey},
+    {NULL, NULL}
+};
+
 static int keyb_get(void);
 static int keyb_wait(int);
 static int keyb_wait_esc(int);
 
-extern int luaopen_keyb(lua_State *L)
+int luaopen_keyb(lua_State *L)
 {
+    luaL_openlib(L, "keyb", keyb, 0);
     return 1;
 }
 
