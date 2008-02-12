@@ -100,29 +100,31 @@ static int l_restore_tty(lua_State *L)
 
 static int l_readkey(lua_State *L)
 {
-    int key = keyb_wait_esc(5000);
-    //int key = KEY_F1;
     char *fkey;
 
-    switch(key) {
-        case KEY_F1:
-            fkey = "F1";
-            break;
-        case KEY_F2:
-            fkey = "F2";
-            break;
-        case KEY_F3:
-            fkey = "F3";
-            break;
-        case KEY_F4:
-            fkey = "F4";
-            break;
-        case KEY_F5:
-            fkey = "F5";
-            break;
-        default:
-            fkey = "UNKNOWN";
-    }
+    do {
+        int key = keyb_wait_esc(500);
+
+        switch(key) {
+            case KEY_F1:
+                fkey = "F1";
+                break;
+            case KEY_F2:
+                fkey = "F2";
+                break;
+            case KEY_F3:
+                fkey = "F3";
+                break;
+            case KEY_F4:
+                fkey = "F4";
+                break;
+            case KEY_F5:
+                fkey = "F5";
+                break;
+            default:
+                fkey = "UNKNOWN";
+        }
+    } while(fkey[0] != 'F');
     lua_pushlstring(L, fkey, strlen(fkey));
     return 1;
 }

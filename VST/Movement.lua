@@ -1,6 +1,12 @@
 
 local json = require("json")
 local http = require("socket.http")
+local keyb = require("keyb")
+
+local get_url = "http://192.168.2.45/~chris/json?lift=%d"
+local release_url = "http://192.168.2.45/~chris/json"
+-- "http://boingball.local.hudora.biz/intern/mypl/beleg/stapler/%d/holen"
+-- "http://boingball.local.hudora.biz/intern/mypl/beleg/zurueckmelden/"
 
 Movement = {source=nil, destination=nil, quantity=0, description="", id = nil}
 
@@ -13,14 +19,14 @@ function Movement:new(o)
 end
 
 function Movement:display()
-    text = table.concat({"%s -> %s", "%s x %s", "", "F2: Ok, F3: Fehler"}, "\n")
+    text = table.concat({"%s -> %s", "%s x %s", " ", "F2: Ok, F3: Fehler"}, "\n")
     io.write(string.format(text, self.source, self.destination, self.quantity, self.description))
+    io.flush()
 end
 
 -- get next movement as json encoded dictionary
 function Movement:next(lift_id)
-    --response = http.request(string.format("http://boingball.local.hudora.biz/intern/mypl/beleg/stapler/%d/holen", lift_id))
-    response = http.request("http://127.0.0.1/~chris/json?lift=" .. lift_id)
+    response = http.request(string.format(get_url, lift_id))
     if response == nil then
         return nil
     end
@@ -29,16 +35,18 @@ function Movement:next(lift_id)
 end
 
 function Movement:handle_input(lift_id)
-    input = io.read()
-    if input == "2" then
-        self:release()
-    elseif input == "3" then
-        -- report error
-        print("error")
+    while true do
+    	input = keyb.readkey()
+    	if input == "F2" then
+        	self:release()
+                break
+    	elseif input == "F5" then
+        	-- report error
+                break
+    	end
     end
 end
 
 function Movement:release()
-    response = http.request("http://127.0.0.1/~chris/json", string.format("belegnr=%s", self.id))
-    --response = http.request("http://boingball.local.hudora.biz/intern/mypl/beleg/zurueckmelden/", string.format("belegnr=%s", self.id))
+    response = http.request(release_url, string.format("belegnr=%s", self.id))
 end

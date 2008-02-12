@@ -11,11 +11,17 @@ end
 
 lift_id = arg[1]
 
+-- redirect all output to /dev/tty1 and clear screen
+io.output("/dev/tty1")
+keyb.init_tty("/dev/tty1")
+
 running = 1
-while running ~= nil do
+while running ~= 0 do
     current_movement = Movement:next(lift_id)
     if current_movement ~= nil then
         current_movement:display()
         current_movement:handle_input()
     end
 end
+
+keyb.restore_tty()
