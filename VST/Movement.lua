@@ -4,11 +4,12 @@ local http = require("socket.http")
 local keyb = require("keyb")
 
 local get_url = "http://192.168.2.45/~chris/json?lift=%d"
-local release_url = "http://192.168.2.45/~chris/json"
+local release_url = "http://192.168.2.45/?RELEASE"
+local error_url = "http://192.168.2.45/?ERROR"
 -- "http://boingball.local.hudora.biz/intern/mypl/beleg/stapler/%d/holen"
 -- "http://boingball.local.hudora.biz/intern/mypl/beleg/zurueckmelden/"
 
-Movement = {source=nil, destination=nil, quantity=0, description="", id = nil}
+Movement = {source=nil, destination=nil, quantity=0, description="", artnr="", id = nil}
 
 
 function Movement:new(o)
@@ -19,8 +20,8 @@ function Movement:new(o)
 end
 
 function Movement:display()
-    text = table.concat({"%s -> %s", "%s x %s", " ", "F2: Ok, F3: Fehler"}, "\n")
-    io.write(string.format(text, self.source, self.destination, self.quantity, self.description))
+    text = table.concat({"", "%s -> %s", "%s x %s", "%s", "F2: Ok, F5: Fehler"}, "\n")
+    io.write(string.format(text, self.source, self.destination, self.quantity, self.description, self.artnr))
     io.flush()
 end
 
@@ -41,10 +42,14 @@ function Movement:handle_input(lift_id)
         	self:release()
                 break
     	elseif input == "F5" then
-        	-- report error
+        	self:report_error()
                 break
     	end
     end
+end
+
+function Movement:report_error()
+    response = http.request(error_url, string.format("belegnr=%s", self.id))
 end
 
 function Movement:release()
