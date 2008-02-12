@@ -21,6 +21,13 @@ while running ~= 0 do
     if current_movement ~= nil then
         current_movement:display()
         current_movement:handle_input()
+    else
+        io.write("\nKeine Umlagerungen\nF1: Weiter\n\n")
+		io.flush()
+		while input ~= "F1" do
+			input = keyb.getkey()
+		end
+			
     end
 end
 
