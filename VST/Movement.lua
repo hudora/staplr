@@ -29,7 +29,7 @@ end
 -- or nil if error occurs of no movement available
 function Movement:next(lift_id)
     response, code = http.request(string.format(get_url, lift_id))
-    if response == nil or code = 404 then
+    if response == nil or code ~= 200 then
         return nil
     end
 
@@ -40,13 +40,13 @@ function Movement:handle_input(lift_id)
     while true do
     	input = keyb.readkey()
     	if input == "F2" then
-			io.write("\n\nMelde Umlagerung\nzurück\n")
+			io.write("\n\nMelde Umlagerung\nzurueck\n")
 			io.flush()
         	self:release()
 			aux.sleep(2)
             break
     	elseif input == "F5" then
-			io.write("\n\nMelde Umlagerung\nzurück\n")
+			io.write("\n\nMelde Fehler\n\n")
 			io.flush()
         	self:report_error()
 			aux.sleep(2)
