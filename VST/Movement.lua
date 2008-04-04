@@ -4,11 +4,15 @@ local http = require("socket.http")
 local keyb = require("keyb")
 local aux = require("aux")
 
-local get_url = "http://192.168.2.45/~chris/json?lift=%d"
-local release_url = "http://192.168.2.45/?RELEASE"
-local error_url = "http://192.168.2.45/?ERROR"
--- "http://boingball.local.hudora.biz/intern/mypl/beleg/stapler/%d/holen"
--- "http://boingball.local.hudora.biz/intern/mypl/beleg/zurueckmelden/"
+local URLS = {
+    "get" = "http://192.168.2.45/~chris/json?lift=%d",
+    "release" = "http://192.168.2.45/?RELEASE&stapler=%d&movement=%s",
+    "error" = "http://192.168.2.45/?ERROR&stapler=%d&movement=%s"
+}
+
+-- "get" = "http://boingball.local.hudora.biz/intern/mypl/beleg/stapler/%d/holen/"
+-- "release" = "http://boingball.local.hudora.biz/intern/mypl/beleg/stapler/%d/zurueckmelden/%s"
+-- "error" = "http://boingball.local.hudora.biz/?ERROR&stapler=%d&movement=%s"
 
 Movement = {source=nil, destination=nil, quantity=0, description="", artnr="", id = nil}
 
@@ -28,7 +32,8 @@ end
 -- get next movement as json encoded dictionary
 -- or nil if error occurs of no movement available
 function Movement:next(lift_id)
-    response, code = http.request(string.format(get_url, lift_id))
+    url = string.format(URLS["get"], lift_id)
+    response, code = http.request(url)
     if response == nil or code ~= 200 then
         return nil
     end
@@ -55,10 +60,17 @@ function Movement:handle_input(lift_id)
     end
 end
 
-function Movement:report_error()
-    response = http.request(error_url, string.format("belegnr=%s", self.id))
+function Movement:report_error(lift_id)
+    body = string.format("belegnr=%s", self.id)
+    url = string.format(URLS["error"], lift_id, self.id)
+    response = http.request(url, body)
 end
 
-function Movement:release()
-    response = http.request(release_url, string.format("belegnr=%s", self.id))
+function Movement:release(lift_id)
+    body = string.format("belegnr=%s", self.id)
+    url = string.format(URLS["release"], lift_id, self.id)
+    response, code = http.request(url, body)
+    if code ~= 200 then
+        -- error!
+    end
 end
