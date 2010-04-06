@@ -325,19 +325,20 @@ ul.individual {
 ul.individual li {
     background: #4c4d4e;
     border: 1px solid #333;
-    font-size: 14px;
+    font-size: 16px;
     text-align: center;
     -webkit-border-radius: 8px;
     -webkit-box-sizing: border-box;
-    width: 48%;
+    width: 45%;
     float: left;
     display: block;
     padding: 11px 10px 14px 10px;
+   
     -webkit-box-shadow: rgba(0,0,0,.2) 1px 1px 3px;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4c4d4e), to(#404142));
 }
 ul.individual li + li {
-    float: right;
+    float: right; 
 }
 ul.individual li a {
     color: #fff;

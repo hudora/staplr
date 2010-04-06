@@ -1,0 +1,13 @@
+<html>
+<body>
+{% block content %}
+<div id="content-main">
+<ul>
+{% for staplerjob in object_list %}
+  <li><a href="{{ staplerjob.id }}">{{ staplerjob.movement_id }}</a></li>
+{% endfor %}
+</ul>
+</div>
+{% endblock %}
+</body>
+</html>

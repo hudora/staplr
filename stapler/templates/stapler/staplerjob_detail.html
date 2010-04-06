@@ -1,0 +1,14 @@
+<html>
+<body>
+
+{% block content %}
+<div id="content-main">
+    <div>Umlagerung <span>{{ object.movement_id }}</span></div>
+    <div>Von: {{ object.deserialized.source }}</div>
+    <div>Bis:</td><td>{{ object.deserialized.destination }}</div>
+    <div>ArtNr.:{{ object.deserialized.artnr }}</div>
+    <div>Durchgeführt von: {{ object.user}}</div>
+</div>
+{% endblock %}
+</body>
+</html>

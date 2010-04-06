@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>myPL Stapler Terminal</title>
+    <meta charset="UTF-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="viewport" content="user-scalable=no, width=device-width" />
+
+    <link rel="apple-touch-icon" href="{{ MEDIA_URL }}/stapler/themes/jqt/img/hudoralogo-icon.png" />
+    <link rel="apple-touch-startup-image" href="{{ MEDIA_URL }}/stapler/themes/jqt/img/iphone-startupscreen.jpg" />
+    
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/stapler/jqtouch/jqtouch.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/stapler/themes/jqt/theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/stapler/jqtouch/stapler.css" />
+    
+    <script src="{{ MEDIA_URL }}/stapler/jqtouch/jquery.1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ MEDIA_URL }}/stapler/jqtouch/jqtouch.min.js" type="application/x-javascript" charset="utf-8"></script>
+    <script src="{{ MEDIA_URL }}/stapler/jqtouch/stapler.js" type="text/javascript" charset="utf-8"></script>
+
+    <script type="text/javascript" charset="utf-8">
+        var jQT = new $.jQTouch({
+            addGlossToIcon: true,
+            startupScreen: 'jqt_startup.png',
+            statusBar: 'black',
+            preloadImages: [
+                '{{ MEDIA_URL }}/stapler/themes/jqt/img/back_button.png',
+                '{{ MEDIA_URL }}/stapler/themes/jqt/img/back_button_clicked.png',
+                '{{ MEDIA_URL }}/stapler/themes/jqt/img/button_clicked.png',
+                '{{ MEDIA_URL }}/stapler/themes/jqt/img/grayButton.png',
+                '{{ MEDIA_URL }}/stapler/themes/jqt/img/whiteButton.png',
+                '{{ MEDIA_URL }}/stapler/themes/jqt/img/loading.gif'
+                ]
+        });
+        
+        $(document).ready(function() {
+           init(); 
+        });
+    </script>
+</head>
+<body>
+
+<!-- Start Page -->
+<div id="start">
+    <div class="toolbar">
+        <h1>myPL Stapler</h1>
+        <a href="#" class="back">Back</a>
+    </div>
+
+    <ul class="edgetoedge">
+        <li>Sie müssen sich anmelden.</li>
+    </ul>
+    
+    <div>
+        <ul class="rounded">
+            <li><a class="cube" href="#login">Anmelden</a></li>
+        </ul>
+    </div> 
+</div>
+
+<!-- Main Menu -->
+<div id="main">
+    <div class="toolbar">
+        <h1>myPL Stapler</h1>
+        <a href="#" class="back">Back</a>
+    </div>
+
+    <div>
+        <div>Angemeldet als <span id="user"></span></div>
+        <ul class="rounded">
+            <li><a class="cube" href="#auftrag" onclick="get_movement();">Umlagerung anfordern</a></li>
+            <li><a class="cube" href="#login" onclick="stapler_logout();">Abmelden</a></li>
+        </ul>
+    </div> 
+</div>
+
+<!-- Login-Seite -->
+<div id="login">
+    <div class="toolbar">
+        <h1>myPL Stapler - Login</h1>
+        <a href="#" class="back">Back</a>
+    </div>
+    <form id="anmeldung" method="post" onsubmit="return false;" autocomplete="off">
+    <ul class="edit rounded">
+        <li><input type="text" name="username" id="username" placeholder="Name" /></li>
+        <li><input type="password" name="password" id="password" placeholder="Passwort" /></li>
+    </ul>
+    <ul class="edit rounded">
+        <li><a onclick="stapler_login();">Anmelden</a></li>
+    </ul>
+    </form>
+</div>
+
+<div id="auftrag">
+    <div class="toolbar">
+        <h1>myPL Stapler: Auftrag</h1>
+        <a href="#" class="back">Back</a>
+    </div>
+
+    <ul class="rounded"><li>Von: <span id="movement_source"></span></li></ul>
+    <ul class="rounded"><li>Nach: <span id="movement_destination"></span></li></ul>
+    <ul class="rounded">
+        <li>Artnr.: <span id="movement_artnr"></span></li>
+        <li>Anzahl: <span id="movement_quantity"></span></li>
+    </ul>
+    
+    <ul class="individual">
+        <!--
+        <li><a class="" onclick="commit_movement(); get_movement();"><br>Zurückmelden<br>und Neu<br><br></a></li>
+        -->
+        <li><a class="cube goback" onclick="commit_movement();">Zurückmelden<br></a></li>
+        <li><a class="slideup storno" href="#storno">Storno<br></a></li>
+    </ul>
+</div>
+
+<div id="storno">
+    <div class="toolbar">
+        <h1>myPL Stapler: Stornieren</h1>
+        <a href="#" class="back">Back</a>
+    </div>
+    <form>
+        Auftrag wirklich stornieren? <span class="toggle"><input type="checkbox" />Storno</span>
+    </form>
+    <ul class="individual">
+        <li><a href="#" class="goback storno" onclick="cancel_movement();">Auftrag stornieren</a></li>
+        <li><a href="#" class="goback">Abbrechen</a></li>
+    </ul>
+</div>
+
+</body>
+</html>
