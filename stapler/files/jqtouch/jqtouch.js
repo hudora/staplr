@@ -54,7 +54,7 @@
         init(options);
 
         function init(options) {
-          
+            
             var defaults = {
                 addGlossToIcon: true,
                 backSelector: '.back, .cancel, .goback',

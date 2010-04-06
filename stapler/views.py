@@ -14,7 +14,7 @@ from django.views.decorators.http import require_POST
 from stapler.models import Staplerjob, make_job
 from stapler.decorators import login_required
 from hudjango.decorators import ajax_request
-from myplfrontend.kernelapi import Kerneladapter
+#from myplfrontend.kernelapi import Kerneladapter
 from cs.zwitscher import zwitscher
 import pprint
 

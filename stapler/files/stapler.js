@@ -2,18 +2,17 @@
  *
  */
 
-var baseurl = "/";
+var BASE_URL = "/";
 
-
-function message(msg) {
-    $("#message").text(msg);
-}
-
+$(document).ready(function() {
+    if(logged_in() == false) {
+        jQT.goTo("#login", "slideup");
+    }
+});
 
 function get_movement() {
-    
     $.ajax({
-        url: baseurl + "stapler/holen/",
+        url: BASE_URL + "stapler/holen/",
         dataType: "json",
         type: "POST",
         error: function(status, request) {
@@ -31,18 +30,17 @@ function get_movement() {
 }
 
 function commit_movement() {
-    var url = baseurl + "stapler/zurueckmelden/";
+    var url = BASE_URL + "stapler/zurueckmelden/";
     var params = {movement_id: localStorage.getItem("movement_id")};
     $.post(url, params, function(data) {
         if (data["status"] !=  "OK")
             alert ("Fehler beim Zurückmelden");
     }, 'json');
-    alert('goto main!');
-    jQT.goTo("#main", "slideup");
+    jQT.goTo("#home", "slideup");
 }
 
 function cancel_movement() {
-    var url = baseurl + "stapler/zurueckmelden/";
+    var url = BASE_URL + "stapler/zurueckmelden/";
     var params = {
                     movement_id: localStorage.getItem("movement_id"),
                     storno: true
@@ -53,7 +51,7 @@ function cancel_movement() {
         }
     }, 'json');
     
-    jQT.goTo("#main", "slideup");
+    jQT.goTo("#home", "slideup");
 }
 
 function logged_in() {
@@ -61,47 +59,46 @@ function logged_in() {
     $.ajax({
             async: false,
             dataType: 'json',
-            url: baseurl + "stapler/home/",
+            url: BASE_URL + "stapler/home/",
             error: function(status, request) {
+                $("#user").text("Nicht angemeldet");
                 result = false;
             },
             success: function(data, status, request) {
+                $("#user").text("Angemeldet als " + data["username"]);
                 result = true;
             }
         });
+    console.log("logged in: " + result);
     return result;
 }
 
-function init() {
-    if(logged_in()) {
-        jQT.goTo("#main", "slideup");
-    } else {
-        jQT.goTo("#login", "slideup");
-    }
-}
-
-
 function stapler_login() {
-    var url = baseurl + 'accounts/login/';
+    var url = BASE_URL + 'accounts/login/';
     var params = {username : $("#username").val(),
                   password : $("#password").val(),
                   next: '/stapler/home/'
                  };
     
-    $.post(url, params, function(data) {
-        if(data["status"] == "OK") {
-            localStorage.setItem('username', params.username);
-            $("#user").text(localStorage.getItem("username"));
-            jQT.goTo("#main", "slideup");
-        } else {
+    $.ajax({
+        async: false,
+        url: url,
+        data: params,
+        dataType: "json",
+        type: "POST",
+        error: function(status, request) {
             alert("Benutzername unbekannt oder Passwort falsch");
+        },
+        success: function(data, status) {
+            alert("OK! GOTO #HOME")
+            jQT.goTo("#home", "slideup");
         }
-    }, "json");
+    });
 }
 
 function stapler_logout() {
-    var url = baseurl + "accounts/logout/";
+    var url = BASE_URL + "accounts/logout/";
     $.post(url, function(data){});
     localStorage.clear();
-    jQT.goTo("#start", "slideup");
+    jQT.goTo("#login", "slideup");
 }
