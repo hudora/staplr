@@ -171,7 +171,7 @@ function cancelMovement() {
  * dargestellt werden, nachdem sie angeklickt worden sind.
  */
 function deactivateLinks() {
-  var targets=['commitMovement','cancelMovement','doLogin','doLogout']
+  var targets=['fetchMovement','commitMovement','cancelMovement','doLogin','doLogout']
   for(idx in targets)
     $('a#'+targets[idx]).removeClass('active');
 }
@@ -185,6 +185,9 @@ function clearMovement() {
   $('#moveQuantity').text('');
   $('#moveArtnr').text('');
   $('#moveOid').val('');
+
+  $('#username').val('');
+  $('#password').val('');
 
   $('#actionsButtons').hide();
   $('#movementButtons').show();
