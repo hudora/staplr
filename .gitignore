@@ -1,0 +1,9 @@
+
+# no mac stuff, no vim swapfiles, no emacs swapfiles
+.DS_Store
+.*.swp
+*~
+
+# no compiled python files, no databases
+*.pyc
+*.sqlite3
