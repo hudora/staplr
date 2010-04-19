@@ -1,21 +1,22 @@
 
 import random
-import json
+import simplejson as json
 import time
 import datetime
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext
 from django.views.decorators.http import require_POST
 from django.contrib.auth import authenticate, login, logout
-#from myplfrontend.kernelapi import Kerneladapter
+from myplfrontend.kernelapi import Kerneladapter
 
 from models import Staplerjob, make_job
 from decorators import login_required
 
 
 def index(request):
-    return render_to_response('stapler/application.html',{})
+    return render_to_response('stapler/application.html',{}, context_instance=RequestContext(request))
 
 def is_logged_in(request):
     is_logged_in = request.user.is_authenticated()
@@ -26,8 +27,8 @@ def is_logged_in(request):
 
 @require_POST
 def do_login(request):
-    username = 'schluete' # request.POST['username']
-    password = 'pyrrha' #request.POST['password']
+    username = request.POST.get('username')
+    password = request.POST.get('password')
     user = authenticate(username=username, password=password)
     if user is not None:
         if user.is_active:
@@ -54,7 +55,10 @@ def fetch_movement(request):
     try:
         job = Staplerjob.objects.get(status='open', user=request.user)
     except Staplerjob.DoesNotExist:
-        # movement = Kerneladapter().get_next_movement(attr='%s via myPL Stapler' % request.user.username)
+        #movement = Kerneladapter().get_next_movement(attr='%s via myPL Stapler' % request.user.username)
+	#f = open('/tmp/movement.log', 'a')
+	#f.write(movement)
+	#f.close()
         id = str(random.randint(10,90))
         movement = {'artnr': '10225'+id,
                     'attr': 'test',
