@@ -13,6 +13,7 @@ from myplfrontend.kernelapi import Kerneladapter
 
 from models import Staplerjob, make_job
 from decorators import login_required
+from cs.zwitscher import zwitscher
 
 
 def index(request):
@@ -55,24 +56,10 @@ def fetch_movement(request):
     try:
         job = Staplerjob.objects.get(status='open', user=request.user)
     except Staplerjob.DoesNotExist:
-        #movement = Kerneladapter().get_next_movement(attr='%s via myPL Stapler' % request.user.username)
-	#f = open('/tmp/movement.log', 'a')
-	#f.write(movement)
-	#f.close()
-        id = str(random.randint(10,90))
-        movement = {'artnr': '10225'+id,
-                    'attr': 'test',
-                    'created_at': '2010-03-29T09:39:00.855806Z',
-                    'from_location': '110303',
-                    'menge': 11,
-                    'mui': '340059981002670930',
-                    'mypl_notify_requesttracker': True,
-                    'oid': 'mb091919'+id,
-                    'reason': 'requesttracker',
-                    'status': 'open',
-                    'to_location': '032201'}
+        movement = Kerneladapter().get_next_movement(attr='%s via myPL Stapler' % request.user.username)
         job = make_job(request.user, movement)
     return HttpResponse(job.serialized_movement, mimetype='application/json')
+
 
 @require_POST
 @login_required
@@ -80,9 +67,10 @@ def commit_or_cancel_movement(request, what, oid):
     job = get_object_or_404(Staplerjob, movement_id=oid, user=request.user, status='open')
     if what == 'storno':
         # Kerneladapter().movement_stornieren(oid, request.user.name, 'Storno via myPL Stapler')
+        zwitscher("Staplerauftrag %s wurde storniert" % oid, username="stapler")
         job.status = 'canceled'
     else:
-        # Kerneladapter().commit_movement(oid)
+        Kerneladapter().commit_movement(oid)
         job.status = 'closed'
     job.closed_at = datetime.datetime.now()
     job.save()
