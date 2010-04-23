@@ -14,24 +14,7 @@ try:
 except:
     import simplejson as json
 
-#from myplfrontend.tools import format_locname
-
-def format_locname(locname):
-    """Formats a location name nicely.
-
-    >>> format_locname("010203")
-    '01-02-03'
-    >>> format_locname("AUSLAG")
-    'AUSLAG'
-    >>> format_locname("K20")
-    'K20'
-    """
-
-    if len(locname) == 6 and str(locname).isdigit():
-        return "%s-%s-%s" % (locname[:2], locname[2:4], locname[4:])
-    return locname
-
-
+from myplfrontend.tools import format_locname
 
 
 STAPLERJOB_STATUS = (
@@ -42,23 +25,7 @@ STAPLERJOB_STATUS = (
 
 
 def make_job(user, movement):
-    """
-    Erzeuge Staplerjob für Movement aus dem myPL kernelE.
-    
-    So sehen die Daten aus:
-    {'artnr': '10225',
-     'attr': 'test',
-     'created_at': '2010-03-29T09:39:00.855806Z',
-     'from_location': '110303',
-     'menge': 11,
-     'mui': '340059981002670930',
-     'mypl_notify_requesttracker': True,
-     'oid': 'mb09191995',
-     'reason': 'requesttracker',
-     'status': 'open',
-     'to_location': '032201'}
-    """
-
+    """ Erzeuge Staplerjob für Movement aus dem myPL kernelE. """
     if not movement:
         return None
     for key in ['from_location', 'to_location']:
