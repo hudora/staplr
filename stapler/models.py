@@ -14,6 +14,25 @@ try:
 except:
     import simplejson as json
 
+#from myplfrontend.tools import format_locname
+
+def format_locname(locname):
+    """Formats a location name nicely.
+
+    >>> format_locname("010203")
+    '01-02-03'
+    >>> format_locname("AUSLAG")
+    'AUSLAG'
+    >>> format_locname("K20")
+    'K20'
+    """
+
+    if len(locname) == 6 and str(locname).isdigit():
+        return "%s-%s-%s" % (locname[:2], locname[2:4], locname[4:])
+    return locname
+
+
+
 
 STAPLERJOB_STATUS = (
     ('open', 'offen'),
@@ -42,6 +61,8 @@ def make_job(user, movement):
 
     if not movement:
         return None
+    for key in ['from_location', 'to_location']:
+        movement[key] = format_locname(movement[key])
     job = Staplerjob.objects.create(user=user, movement_id=movement['oid'],
                                     serialized_movement=json.dumps(movement, indent=2),
                                     status="open",
