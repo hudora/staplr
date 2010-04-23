@@ -19,6 +19,19 @@ from cs.zwitscher import zwitscher
 def index(request):
     return render_to_response('stapler/application.html',{}, context_instance=RequestContext(request))
 
+
+import httplib, urllib
+def super_fieses_rueckmelden(request, oid):
+    url = "/mypl/beleg/zurueckmelden/"
+    conn = httplib.HTTPConnection("intern.hudora.biz")
+    headers = {"Content-type": "application/x-www-form-urlencoded"}
+    conn.request("POST", "/accounts/login/", urllib.urlencode(request.session['credentials']), headers)
+    cookie = conn.getresponse().getheader('set-cookie').split(' ')[0]
+    headers['Cookie'] = cookie
+    conn.request('POST', url, urllib.urlencode({'belegnr': oid}), headers)
+    return conn.getresponse()
+
+
 def is_logged_in(request):
     is_logged_in = request.user.is_authenticated()
     job_count = Staplerjob.objects.filter(status='open', user=request.user).count()
@@ -31,6 +44,7 @@ def do_login(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     user = authenticate(username=username, password=password)
+    request.session['credentials'] = {'username': username, 'password': password} # Das bereitet mir wirklich Schmerzen!
     if user is not None:
         if user.is_active:
             login(request, user)
@@ -70,7 +84,8 @@ def commit_or_cancel_movement(request, what, oid):
         zwitscher("Staplerauftrag %s wurde storniert" % oid, username="stapler")
         job.status = 'canceled'
     else:
-        Kerneladapter().commit_movement(oid)
+        #Kerneladapter().commit_movement(oid)
+        super_fieses_rueckmelden(request, oid)
         job.status = 'closed'
     job.closed_at = datetime.datetime.now()
     job.save()
