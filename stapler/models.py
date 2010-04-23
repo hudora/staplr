@@ -2,7 +2,7 @@
 """"
 models.py
 
-Created by Christian Klein on 2010-03-26.
+Created by Axel Schlueter and Christian Klein on 2010-03-26.
 Copyright (c) 2010 HUDORA GmbH. All rights reserved.
 """
 
@@ -11,7 +11,7 @@ from django.db import models
 from django.contrib.auth.models import User
 try:
     import json
-except:
+except ImportError:
     import simplejson as json
 
 from myplfrontend.tools import format_locname
@@ -50,6 +50,7 @@ class Staplerjob(models.Model):
     def __unicode__(self):
         return u'ID: %s, User: %s, Movement ID: %s' % (self.id, self.user, self.movement_id)
     
+    @property
     def deserialized(self):
         if not hasattr(self, '_deserialized'):
             self._deserialized = json.loads(self.serialized_movement)
@@ -61,6 +62,14 @@ class Staplerjob(models.Model):
         except KeyError:
             return unicode(self.movement_id)
     
+    def from_location(self):
+        return self.deserialized.get('from_location')
+    
+    def to_location(self):
+        return self.deserialized.get('to_location')
+    
     class Meta:
+        get_latest_by = "created_at"
+        ordering = ["-created_at"]
         verbose_name = "Staplerjob"
         verbose_name_plural = "Staplerjobs"
