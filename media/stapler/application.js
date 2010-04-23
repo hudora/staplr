@@ -116,6 +116,10 @@ function fetchMovementCallback(data,status) {
     $('#movementButtons').hide();
     $('#movementSpinner').hide();
   }
+  else if(data['status']=='not_found') {
+    clearMovement();
+    alert('Es liegt keine Umlagerung vor.');
+  }
   else {
     clearMovement();
     alert('Bei der Anforderung ist ein Fehler aufgetreten!');

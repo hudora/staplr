@@ -15,5 +15,5 @@ urlpatterns = patterns('stapler.views',
 )
 
 urlpatterns += patterns('django.views',
-    (r'^files/(?P<path>.*)$', 'static.serve', {'document_root': 'stapler/files'}),
+    (r'^mdia/(?P<path>.*)$', 'static.serve', {'document_root': 'media'}),
 )

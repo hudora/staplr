@@ -9,7 +9,10 @@ Copyright (c) 2010 HUDORA GmbH. All rights reserved.
 import datetime
 from django.db import models
 from django.contrib.auth.models import User
-import simplejson as json
+try:
+    import json
+except:
+    import simplejson as json
 
 
 STAPLERJOB_STATUS = (
@@ -36,6 +39,9 @@ def make_job(user, movement):
      'status': 'open',
      'to_location': '032201'}
     """
+
+    if not movement:
+        return None
     job = Staplerjob.objects.create(user=user, movement_id=movement['oid'],
                                     serialized_movement=json.dumps(movement, indent=2),
                                     status="open",
