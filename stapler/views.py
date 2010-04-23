@@ -15,21 +15,12 @@ from models import Staplerjob, make_job
 from decorators import login_required
 from cs.zwitscher import zwitscher
 
+# XXX: REMOVE AS SOON AS POSSIBLE:
+from mypl.kernel import Kerneladapter as OldKerneladapter
+
 
 def index(request):
     return render_to_response('stapler/application.html',{}, context_instance=RequestContext(request))
-
-
-import httplib, urllib
-def super_fieses_rueckmelden(request, oid):
-    url = "/mypl/beleg/zurueckmelden/"
-    conn = httplib.HTTPConnection("intern.hudora.biz")
-    headers = {"Content-type": "application/x-www-form-urlencoded"}
-    conn.request("POST", "/accounts/login/", urllib.urlencode(request.session['credentials']), headers)
-    cookie = conn.getresponse().getheader('set-cookie').split(' ')[0]
-    headers['Cookie'] = cookie
-    conn.request('POST', url, urllib.urlencode({'belegnr': oid}), headers)
-    return conn.getresponse()
 
 
 def is_logged_in(request):
@@ -84,8 +75,9 @@ def commit_or_cancel_movement(request, what, oid):
         zwitscher("Staplerauftrag %s wurde storniert" % oid, username="stapler")
         job.status = 'canceled'
     else:
+        # Der neue (HTTP-basierte) Kerneladapter unterstuetzt noch kein Rueckmelden von Movements:
         #Kerneladapter().commit_movement(oid)
-        super_fieses_rueckmelden(request, oid)
+        OldKerneladapter().commit_movement(oid)
         job.status = 'closed'
     job.closed_at = datetime.datetime.now()
     job.save()
