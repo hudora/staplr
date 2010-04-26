@@ -1,5 +1,5 @@
 # encoding: utf-8
-""""
+"""
 models.py
 
 Created by Axel Schlueter and Christian Klein on 2010-03-26.
