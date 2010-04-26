@@ -11,6 +11,7 @@ urlpatterns = patterns('stapler.views',
     (r'^fetch_movement', 'fetch_movement'),
     (r'^commit_movement', 'commit_or_cancel_movement', {'what': 'commit'}),
     (r'^cancel_movement', 'commit_or_cancel_movement', {'what': 'cancel'}),
+    (r'^history', 'history'),
     (r'^$', 'index'),
 )
 

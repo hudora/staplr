@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 
 import random
 try:
@@ -5,7 +6,7 @@ try:
 except:
     import simplejson as json
 import time
-import datetime
+from datetime import datetime
 
 from django.conf import settings
 from django.http import HttpResponse, Http404
@@ -21,7 +22,7 @@ from django.contrib.auth import authenticate, login, logout
 from mypl.kernel import Kerneladapter as OldKerneladapter
 from myplfrontend.kernelapi import Kerneladapter
 
-from models import Staplerjob, make_job
+from models import Staplerjob, make_job, STAPLERJOB_STATUS
 from decorators import login_required
 from cs.zwitscher import zwitscher
 
@@ -113,9 +114,25 @@ def commit_or_cancel_movement(request, what):
             #Kerneladapter().commit_movement(oid)
             OldKerneladapter().commit_movement(oid)
         job.status = 'closed'
-    job.closed_at = datetime.datetime.now()
+    job.closed_at = datetime.now()
     job.save()
     return _render_to_json({ 'status': 'OK' })
+
+#@require_POST
+@login_required
+def history(request):
+    result = []
+    username = request.user.username
+    jobs = Staplerjob.objects.exclude(status='open') \
+                             .filter(user__username=username) \
+                             .order_by('-created_at')[0:10]
+    for job in jobs:
+        data = job.deserialized
+        data['status'] = filter(lambda x: x, \
+                                map(lambda (e,d): d if e==job.status else None, \
+                                    STAPLERJOB_STATUS))[0] 
+        result.append(data)
+    return _render_to_json({ 'status': 'OK', 'data': result })
 
 def _render_to_json(data):
     json_data = json.dumps(data)
@@ -128,7 +145,7 @@ def _get_dummy_movement():
     ident = str(random.randint(10, 90))
     return { 'artnr': '1025' + ident,
              'attr': 'test',
-             'created_at': '2010-03-29T09:39:00.855806Z',
+             'created_at': datetime.now().isoformat(),
              'from_location': '1103' + ident,
              'to_location': '03' + ident + '01',
              'menge': 11,

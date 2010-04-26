@@ -18,8 +18,51 @@ $(document).ready(function() {
   $("a#fetchMovement").click(fetchMovement);
   $("a#cancelMovement").click(cancelMovement);
   $("a#commitMovement").click(function() { return commitOrCancelMovement('commit'); });
+  $("a#showHistory").click(showHistory);
   displayCurrentOrClearMovement();
 });
+
+/**
+ * laedt die letzten 10 Umlagerungen des Benutzers 
+ * aus der Datenbank und zeigt sie tabellarisch an.
+ */
+function showHistory() {
+  $('ul#historyList').html("<li>Wird geladen...</li>");
+  jQT.goTo('#history','slide'); 
+  deactivateLinks();
+
+  $.ajax({
+    url: '/stapler/history/',
+    dataType: 'json',
+    type: 'post',
+    error: function() { $('ul#historyList').html("<li>Fehler!</li>"); },
+    success: fillHistory
+  });
+  return false;
+};
+
+/**
+ * zeigt die vom Server empfangenen letzten 10 Umlagerungen
+ * des Benutzers an
+ */
+function fillHistory(data, status) {
+  var historyList=$('ul#historyList');
+  historyList.html("");
+  if(data['status']!='OK')
+    historyList.html("<li>keine gültigen Daten!</li>");
+  else {
+    var movements=data['data'];
+    for(idx in movements) {
+      var job=movements[idx],
+          createdAt=prettyDate(job['created_at']);
+      historyList.append('<li>'+job['from_location']+' -> '+job['to_location']+'<br/>'+
+                         '<h1>ArtNr.: '+job['artnr']+', '+job['menge']+' Stück</h1>'+
+                         '<h1>'+createdAt+' ('+job['status']+')</h1>'+
+                         '</li>');
+    }
+  }
+  return false;
+}
 
 /**
  * Startet einen Loginversuch, der spaeter ueber den Callback
@@ -176,7 +219,7 @@ function cancelMovement() {
  * dargestellt werden, nachdem sie angeklickt worden sind.
  */
 function deactivateLinks() {
-  var targets=['fetchMovement','commitMovement','cancelMovement','doLogin','doLogout']
+  var targets=['showHistory', 'fetchMovement','commitMovement','cancelMovement','doLogin','doLogout']
   for(idx in targets)
     $('a#'+targets[idx]).removeClass('active');
 }
