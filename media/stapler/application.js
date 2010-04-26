@@ -138,7 +138,8 @@ function commitOrCancelMovement(what) {
 
   var oid=$('#moveOid').val(oid);
   $.ajax({
-    url: '/stapler/'+what+'_movement/'+oid,
+    url: '/stapler/'+what+'_movement/',
+    data: {'oid': oid},
     dataType: 'json',
     type: 'post',
     error: commitOrCancelMovementCallback,

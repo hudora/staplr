@@ -9,8 +9,8 @@ urlpatterns = patterns('stapler.views',
     (r'^logout', 'do_logout'),
     (r'^is_logged_in', 'is_logged_in'),
     (r'^fetch_movement', 'fetch_movement'),
-    (r'^commit_movement/(?P<oid>[\w\d]+)', 'commit_or_cancel_movement', {'what': 'commit'}),
-    (r'^cancel_movement/(?P<oid>[\w\d]+)', 'commit_or_cancel_movement', {'what': 'cancel'}),
+    (r'^commit_movement', 'commit_or_cancel_movement', {'what': 'commit'}),
+    (r'^cancel_movement', 'commit_or_cancel_movement', {'what': 'cancel'}),
     (r'^$', 'index'),
 )
 

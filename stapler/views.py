@@ -95,13 +95,14 @@ def fetch_movement(request):
 
 @require_POST
 @login_required
-def commit_or_cancel_movement(request, what, oid):
+def commit_or_cancel_movement(request, what):
+    oid = request.POST['oid']
     job = get_object_or_404(Staplerjob, movement_id=oid, user=request.user, status='open')
-    if what == 'storno':
+    if what == 'cancel':
         if _is_debug:
-            print "Kerneladapter().movement_stornieren(%s, %s, 'Storno')" % (oid, request.user.name)
+            print "Kerneladapter().movement_stornieren('%s', '%s', 'Storno')" % (oid, request.user.username)
         else:
-            Kerneladapter().movement_stornieren(oid, request.user.name, 'Storno via myPL Stapler')
+            Kerneladapter().movement_stornieren(oid, request.user.username, 'Storno via myPL Stapler')
             zwitscher("Staplerauftrag %s wurde storniert" % oid, username="stapler")
         job.status = 'canceled'
     else:
@@ -119,7 +120,6 @@ def commit_or_cancel_movement(request, what, oid):
 def _render_to_json(data):
     json_data = json.dumps(data)
     return HttpResponse(json_data, mimetype='application/json')
-
 
 def _get_dummy_movement():
     """ liefert ein Testmovement zurueck, damit der Stapler-Source ohne 
