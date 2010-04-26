@@ -58,7 +58,7 @@ class Staplerjob(models.Model):
     
     def __unicode__(self):
         try:
-            return "%(oid)s: %(artnr)s von %(from_location)s nach %(to_location)s" % self.deserialized()
+            return "%(oid)s: %(artnr)s von %(from_location)s nach %(to_location)s" % self.deserialized
         except KeyError:
             return unicode(self.movement_id)
     
